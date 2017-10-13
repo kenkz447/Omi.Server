@@ -1,0 +1,22 @@
+﻿using Omi.Modular;
+using Microsoft.Extensions.DependencyInjection;
+using Omi.Modules.FileAndMedia.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+namespace Omi.Modules.FileAndMedia
+{
+    public class ModuleBaseInitializer : IModuleInitializer
+    {
+        public void Init(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+            services.AddDbContext<FileAndMediaDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<FileService>();
+        }
+    }
+}

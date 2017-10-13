@@ -1,0 +1,25 @@
+﻿@page
+@model ReportsModel
+
+<h2>Reports</h2>
+
+<ul id="reports"></ul>
+
+@section scripts {
+    <script src="js/signalr-client.min.js"></script>
+    <script>
+        $(function () {
+
+            let hubUrl = 'https://localhost:44355/reportsPublisher';
+            let httpConnection = new signalR.HttpConnection(hubUrl);
+            let hubConnection = new signalR.HubConnection(httpConnection);
+
+            hubConnection.on('OnReportPublished', data => {
+                $('#reports').append($('<li>').text(data));
+            });
+
+            hubConnection.start();
+
+        });
+    </script>
+}
