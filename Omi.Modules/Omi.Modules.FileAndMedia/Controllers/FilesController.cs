@@ -36,7 +36,7 @@ namespace Omi.Modules.FileAndMedia.Controllers
                 if (uploadedEntity.Count() != 0)
                     _logger.LogInformation("A file was uploaded to server.");
 
-                var result = uploadedEntity.Select(fileEntity => new FileEntityInfo(fileEntity));
+                var result = uploadedEntity.Select(fileEntity => FileEntityInfo.FromEntity(fileEntity));
 
                 return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, result);
             }
@@ -52,7 +52,7 @@ namespace Omi.Modules.FileAndMedia.Controllers
                 // Service model properties...
             });
 
-            var result = entities.Select(fileEntity => new FileEntityInfo(fileEntity));
+            var result = entities.Select(fileEntity => FileEntityInfo.FromEntity(fileEntity));
 
             return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, result);
         }

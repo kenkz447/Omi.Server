@@ -14,16 +14,20 @@ namespace Omi.Modules.FileAndMedia.ViewModel
 
         }
 
-        public FileEntityInfo(FileEntity fileEntity)
+        public static FileEntityInfo FromEntity(FileEntity entity)
         {
-            FileId = fileEntity.Id;
+            var FileEntityInfo = new FileEntityInfo
+            {
+                FileId = entity.Id,
+                Src = entity.Src
+            };
 
-            var fileMeta = fileEntity.GetMeta();
+            var fileMeta = entity.GetMeta();
 
             if (fileMeta.ThumbnailFileName != null)
-                srcThumb = $"{Path.GetDirectoryName(fileEntity.Src)}/{fileMeta.ThumbnailFileName}".Replace('\\','/');
+                FileEntityInfo.srcThumb = $"{Path.GetDirectoryName(entity.Src)}/{fileMeta.ThumbnailFileName}".Replace('\\', '/');
 
-            Src = fileEntity.Src;
+            return FileEntityInfo;
         }
 
         public long FileId { get; set; }

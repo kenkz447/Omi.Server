@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Omi.Modules.ModuleBase.Entities
 {
-    public class TaxonomyType : BaseEntity
+    public class TaxonomyType : BaseEntity, IEntityWithName
     {
         [Required]
         public string Name { get; set; }

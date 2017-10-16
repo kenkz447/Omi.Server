@@ -16,7 +16,19 @@ namespace Omi.Modules.HomeBuilder
                 .HasKey(o => new { o.PackageId, o.TaxonomyId });
 
             builder.Entity<PackageFile>()
-                .HasKey(o => new { o.PackageId, o.FileEntityId });
+                .HasKey(o => new { o.EntityId, o.FileEntityId });
+
+            builder.Entity<Project>()
+                            .HasMany(o => o.ProjectDetails);
+            builder.Entity<ProjectDetail>();
+
+            builder.Entity<ProjectTaxonomy>()
+                .HasKey(o => new { o.ProjectId, o.TaxonomyId });
+
+            builder.Entity<ProjectFile>()
+                .HasKey(o => new { o.EntityId, o.FileEntityId });
+
+
         }
     }
 }

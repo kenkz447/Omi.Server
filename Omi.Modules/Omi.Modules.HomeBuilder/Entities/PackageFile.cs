@@ -8,10 +8,10 @@ namespace Omi.Modules.HomeBuilder.Entities
 {
     public class PackageFile :  IEntityFile<Package>
     {
-        public long PackageId { get; set; }
-        public long FileEntityId { get; set; }
-
         public int UsingType { get; set; }
+
+        public long EntityId { get; set; }
+        public long FileEntityId { get; set; }
 
         public Package Entity { get; set; }
         public FileEntity FileEntity { get; set; }

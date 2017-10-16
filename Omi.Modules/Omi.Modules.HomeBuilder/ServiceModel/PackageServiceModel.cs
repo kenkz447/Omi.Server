@@ -7,10 +7,12 @@ using System.Linq;
 using System.Text;
 
 using Omi.Modules.HomeBuilder.Utilities;
+using Omi.Modules.FileAndMedia.Base.Entity;
 
 namespace Omi.Modules.HomeBuilder.ServiceModel
 {
-    public class PackageServiceModel
+    public class PackageServiceModel : 
+        IServiceModelWithFiles<Package, PackageFile>
     {
         public long Id { get; set; }
 
@@ -25,7 +27,7 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
 
         public ApplicationUser User { get; set; }
 
-        public Package CreatePackageFromServiceModel()
+        public Package ToEntity()
         {
             var newPackage = new Package
             {
@@ -35,11 +37,33 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
                 PackageDetails = new List<PackageDetail>() {
                     Detail
                 },
-                PackageFiles = ServiceUtilities.GetPackageFiles(this),
+                EnitityFiles = GetEntityFiles(),
                 EntityTaxonomies = new List<PackageTaxonomy>(
                     TaxonomyIds.Select(taxonomyId => new PackageTaxonomy { TaxonomyId = taxonomyId, PackageId = Id }))
             };
             return newPackage;
+        }
+
+        public IEnumerable<PackageFile> GetEntityFiles()
+        {
+            var packageFiles = new List<PackageFile>()
+                {
+                    new PackageFile
+                    {
+                        UsingType = (int)FileUsingType.Avatar,
+                        FileEntityId = AvatarFileId,
+                        EntityId = Id,
+                    },
+                };
+
+            packageFiles.AddRange(PictureFileIds.Select(o => new PackageFile
+            {
+                UsingType = (int)FileUsingType.Picture,
+                FileEntityId = o,
+                EntityId = Id,
+            }));
+
+            return packageFiles;
         }
     }
 }

@@ -13,13 +13,10 @@ namespace Omi.Modules.HomeBuilder
     {
         public async void Init(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-
-            services.AddDbContext<HomeBuilderDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<HomeBuilderDbContext>();
 
             services.AddScoped<PackageService>();
+            services.AddScoped<ProjectService>();
 
             var dbContext = services.BuildServiceProvider().GetService<HomeBuilderDbContext>();
 
@@ -29,10 +26,12 @@ namespace Omi.Modules.HomeBuilder
                 var designThemeSeed = new DesignThemeSeed();
                 var packageIncludedSeed = new PackageIncludedSeed();
                 var houseStyleSeed = new HouseStyleSeed();
+                var projectTypeSeed = new ProjectTypeSeed();
 
                 await designThemeSeed.SeedAsync(dbContext);
                 await packageIncludedSeed.SeedAsync(dbContext);
                 await houseStyleSeed.SeedAsync(dbContext);
+                await projectTypeSeed.SeedAsync(dbContext);
             }
         }
     }

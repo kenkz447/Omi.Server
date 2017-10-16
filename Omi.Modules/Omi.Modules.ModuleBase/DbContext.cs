@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Omi.Modules.ModuleBase
 {
-    public class ModuleBaseDbContext : ApplicationDbContext, IModuleBaseDbContext
+    public class ModuleBaseDbContext : ApplicationDbContext
     {
         public ModuleBaseDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

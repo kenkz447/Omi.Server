@@ -270,21 +270,15 @@ namespace Omi.DatabaseDesign.Migrations
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.PackageFile", b =>
                 {
-                    b.Property<long>("PackageId");
+                    b.Property<long>("EntityId");
 
                     b.Property<long>("FileEntityId");
 
-                    b.Property<long?>("EntityFileEntityId");
-
-                    b.Property<long?>("EntityPackageId");
-
                     b.Property<int>("UsingType");
 
-                    b.HasKey("PackageId", "FileEntityId");
+                    b.HasKey("EntityId", "FileEntityId");
 
                     b.HasIndex("FileEntityId");
-
-                    b.HasIndex("EntityPackageId", "EntityFileEntityId");
 
                     b.ToTable("PackageFile");
                 });
@@ -300,6 +294,124 @@ namespace Omi.DatabaseDesign.Migrations
                     b.HasIndex("TaxonomyId");
 
                     b.ToTable("PackageTaxonomy");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.Project", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("CityId");
+
+                    b.Property<int?>("CityId1");
+
+                    b.Property<string>("CreateByUserId");
+
+                    b.Property<DateTime?>("CreateDate");
+
+                    b.Property<string>("DeleteByUserId");
+
+                    b.Property<DateTime?>("DeleteDate");
+
+                    b.Property<long?>("EntityTypeId");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId1");
+
+                    b.HasIndex("CreateByUserId");
+
+                    b.HasIndex("DeleteByUserId");
+
+                    b.HasIndex("EntityTypeId");
+
+                    b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("Area");
+
+                    b.Property<string>("Investor");
+
+                    b.Property<string>("Language");
+
+                    b.Property<long>("ProjectId");
+
+                    b.Property<int>("StartedYear");
+
+                    b.Property<string>("Street");
+
+                    b.Property<string>("Title");
+
+                    b.Property<int>("TotalApartment");
+
+                    b.Property<string>("Website");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectDetail");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectFile", b =>
+                {
+                    b.Property<long>("EntityId");
+
+                    b.Property<long>("FileEntityId");
+
+                    b.Property<int>("UsingType");
+
+                    b.HasKey("EntityId", "FileEntityId");
+
+                    b.HasIndex("FileEntityId");
+
+                    b.ToTable("ProjectFile");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectTaxonomy", b =>
+                {
+                    b.Property<long>("ProjectId");
+
+                    b.Property<long>("TaxonomyId");
+
+                    b.HasKey("ProjectId", "TaxonomyId");
+
+                    b.HasIndex("TaxonomyId");
+
+                    b.ToTable("ProjectTaxonomy");
+                });
+
+            modelBuilder.Entity("Omi.Modules.Location.Entities.GeographicaLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("JsonOptions");
+
+                    b.Property<string>("Label")
+                        .IsRequired();
+
+                    b.Property<int>("LocationType");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int?>("ParentId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("GeographicaLocation");
                 });
 
             modelBuilder.Entity("Omi.Modules.ModuleBase.Entities.CustomField", b =>
@@ -607,19 +719,15 @@ namespace Omi.DatabaseDesign.Migrations
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.PackageFile", b =>
                 {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Package", "Entity")
+                        .WithMany("EnitityFiles")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Omi.Modules.FileAndMedia.Entities.FileEntity", "FileEntity")
                         .WithMany()
                         .HasForeignKey("FileEntityId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Package")
-                        .WithMany("PackageFiles")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Omi.Modules.HomeBuilder.Entities.PackageFile", "Entity")
-                        .WithMany()
-                        .HasForeignKey("EntityPackageId", "EntityFileEntityId");
                 });
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.PackageTaxonomy", b =>
@@ -633,6 +741,66 @@ namespace Omi.DatabaseDesign.Migrations
                         .WithMany()
                         .HasForeignKey("TaxonomyId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.Project", b =>
+                {
+                    b.HasOne("Omi.Modules.Location.Entities.GeographicaLocation", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId1");
+
+                    b.HasOne("Omi.Data.ApplicationUser", "CreateByUser")
+                        .WithMany()
+                        .HasForeignKey("CreateByUserId");
+
+                    b.HasOne("Omi.Data.ApplicationUser", "DeleteByUser")
+                        .WithMany()
+                        .HasForeignKey("DeleteByUserId");
+
+                    b.HasOne("Omi.Modules.ModuleBase.Entities.EntityType", "EntityType")
+                        .WithMany()
+                        .HasForeignKey("EntityTypeId");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectDetail", b =>
+                {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Project", "Project")
+                        .WithMany("ProjectDetails")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectFile", b =>
+                {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Project", "Entity")
+                        .WithMany("EnitityFiles")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Omi.Modules.FileAndMedia.Entities.FileEntity", "FileEntity")
+                        .WithMany()
+                        .HasForeignKey("FileEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectTaxonomy", b =>
+                {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Project", "Entity")
+                        .WithMany("EntityTaxonomies")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Omi.Modules.ModuleBase.Entities.Taxonomy", "Taxonomy")
+                        .WithMany()
+                        .HasForeignKey("TaxonomyId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Omi.Modules.Location.Entities.GeographicaLocation", b =>
+                {
+                    b.HasOne("Omi.Modules.Location.Entities.GeographicaLocation", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
                 });
 
             modelBuilder.Entity("Omi.Modules.ModuleBase.Entities.CustomField", b =>

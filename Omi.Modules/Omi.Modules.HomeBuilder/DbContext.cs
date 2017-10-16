@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Omi.Data;
 using Omi.Modular;
-using Omi.Modules.HomeBuilder;
 using Omi.Modules.HomeBuilder.Entities;
 using Omi.Modules.ModuleBase;
-using System.Collections.Generic;
 
 namespace Omi.Modules.HomeBuilder
 {
-    public class HomeBuilderDbContext : ModuleBaseDbContext, IHomeBuilderDbContext
+    public class HomeBuilderDbContext : ModuleBaseDbContext
     {
         public HomeBuilderDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -17,6 +15,7 @@ namespace Omi.Modules.HomeBuilder
         }
 
         public DbSet<Package> Package { get; set; }
+        public DbSet<Project> Project { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

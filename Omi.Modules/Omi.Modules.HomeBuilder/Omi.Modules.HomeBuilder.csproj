@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Omi.Core\Omi.Packages\Omi.Packages.csproj" />
     <ProjectReference Include="..\..\Omi.Core\Omi.Services\Omi.Services.csproj" />
     <ProjectReference Include="..\Omi.Modules.FileAndMedia\Omi.Modules.FileAndMedia.csproj" />
+    <ProjectReference Include="..\Omi.Modules.Location\Omi.Modules.Location.csproj" />
     <ProjectReference Include="..\Omi.Modules.ModuleBase\Omi.Modules.ModuleBase.csproj" />
   </ItemGroup>
 

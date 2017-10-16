@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Omi.Data.Entity;
+using Omi.Extensions;
 using Omi.Modular;
 using Omi.Modules.ModuleBase.Entities;
 using System;
@@ -45,32 +46,17 @@ namespace Omi.Modules.HomeBuilder.DbSeed
         public async Task SeedAsync(DbContext context)
         {
             var entityTypeSet = context.Set<TaxonomyType>();
-
-            var desingTheme = await entityTypeSet.FirstOrDefaultAsync(o => o.Name == DesignTheme.Name);
-            if (desingTheme == null)
-                DesignTheme = entityTypeSet.Add(DesignTheme).Entity;
-            else
-                DesignTheme = desingTheme;
+            DesignTheme = entityTypeSet.SeedEntity(DesignTheme);
 
             Classic.TaxonomyTypeId = DesignTheme.Id;
             Modern.TaxonomyTypeId = DesignTheme.Id;
 
             var taxonomySet = context.Set<Taxonomy>();
 
-            Classic = await SeedEntityAsync(taxonomySet, Classic);
-            Modern = await SeedEntityAsync(taxonomySet, Modern);
+            Classic = taxonomySet.SeedEntity(Classic);
+            Modern = taxonomySet.SeedEntity(Modern);
 
             await context.SaveChangesAsync();
-        }
-
-        public async Task<T> SeedEntityAsync<T>(DbSet<T> entitySet, T entityToSeed)
-            where T : class, IEntityWithName
-        {
-            var entity = await entitySet.FirstOrDefaultAsync(o => o.Name == entityToSeed.Name);
-            if(entity == null)
-                return entitySet.Add(entityToSeed).Entity;
-
-            return entity;
         }
     }
 }

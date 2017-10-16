@@ -14,13 +14,13 @@ using System.Linq;
 using System;
 
 using static Omi.Modules.HomeBuilder.Utilities.ViewModelUtilities;
-using static Omi.Modules.ModuleBase.Utilities.ViewModelUtilities;
 using System.Threading.Tasks;
 using Omi.Modules.FileAndMedia.Base;
 using Omi.Modules.FileAndMedia.ViewModel;
 using Omi.Modules.HomeBuilder.DbSeed;
 using Omi.Modules.HomeBuilder.Entities;
 using Omi.Base.ViewModel;
+using Omi.Modules.ModuleBase.ViewModels;
 
 namespace Omi.Modules.HomeBuilder.Controllers
 {
@@ -47,9 +47,9 @@ namespace Omi.Modules.HomeBuilder.Controllers
 
                 var result = new PackageViewModel
                 {
-                    ValiableDesignThemes = designThemes.Select(o => ToTaxonomyViewModel(o)),
-                    ValiablePackageIncludedItems = packageIncludeItems.Select(o => ToTaxonomyViewModel(o)),
-                    ValiableHouseStyles = houseStyle.Select(o => ToTaxonomyViewModel(o)),
+                    AvaliableDesignThemes = designThemes.Select(o => TaxomonyViewModel.FromEntity(o)),
+                    AvaliablePackageIncludedItems = packageIncludeItems.Select(o => TaxomonyViewModel.FromEntity(o)),
+                    AvaliableHouseStyles = houseStyle.Select(o => TaxomonyViewModel.FromEntity(o)),
                 };
 
                 return result;
@@ -61,16 +61,9 @@ namespace Omi.Modules.HomeBuilder.Controllers
 
         public async Task<BaseJsonResult> GetPackageViewModel(long packageId)
         {
-            try
-            {
-                var package = await _packageService.GetPackageById(packageId);
-                var viewModel = ToPackageViewModel(package);
-                return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var package = await _packageService.GetPackageById(packageId);
+            var viewModel = ToPackageViewModel(package);
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModel);
         }
 
         [AllowAnonymous]
@@ -85,7 +78,7 @@ namespace Omi.Modules.HomeBuilder.Controllers
         public BaseJsonResult GetDesignThemes()
         {
             var designTheme = _packageService.GetAllDesignThemes();
-            var result = designTheme.Select(o => ToTaxonomyViewModel(o));
+            var result = designTheme.Select(o => TaxomonyViewModel.FromEntity(o));
 
             return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, result);
         }
@@ -94,7 +87,7 @@ namespace Omi.Modules.HomeBuilder.Controllers
         public BaseJsonResult GetHouseStyles()
         {
             var designTheme = _packageService.GetAllHouseStyles();
-            var result = designTheme.Select(o => ToTaxonomyViewModel(o));
+            var result = designTheme.Select(o => TaxomonyViewModel.FromEntity(o));
 
             return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, result);
         }
@@ -147,11 +140,11 @@ namespace Omi.Modules.HomeBuilder.Controllers
             packageViewModel.Title = detail.Title;
             packageViewModel.SortText = detail.SortText;
 
-            var avatarFile = package.PackageFiles.FirstOrDefault(o => o.UsingType == (int)FileUsingType.Avatar);
-            packageViewModel.Avatar = new FileEntityInfo(avatarFile.FileEntity);
+            var avatarFile = package.EnitityFiles.FirstOrDefault(o => o.UsingType == (int)FileUsingType.Avatar);
+            packageViewModel.Avatar = FileEntityInfo.FromEntity(avatarFile.FileEntity);
 
-            var pictureFiles = package.PackageFiles.Where(o => o.UsingType == (int)FileUsingType.Picture);
-            packageViewModel.Pictures = pictureFiles.Select(o => new FileEntityInfo(o.FileEntity));
+            var pictureFiles = package.EnitityFiles.Where(o => o.UsingType == (int)FileUsingType.Picture);
+            packageViewModel.Pictures = pictureFiles.Select(o => FileEntityInfo.FromEntity(o.FileEntity));
 
             var houseType = package.EntityTaxonomies.FirstOrDefault(o => o.Taxonomy.TaxonomyTypeId == HouseStyleSeed.HouseStyle.Id);
             packageViewModel.HouseTypeId = houseType.TaxonomyId;
@@ -163,7 +156,7 @@ namespace Omi.Modules.HomeBuilder.Controllers
 
             var includedItems = package.EntityTaxonomies.Where(o => o.Taxonomy.TaxonomyTypeId == PackageIncludedSeed.PackageIncludedItem.Id);
             packageViewModel.PackageIncludedItemIds = includedItems.Select(o => o.TaxonomyId);
-            packageViewModel.PackageIncludedItems = includedItems.Select(o => ToTaxonomyViewModel(o.Taxonomy));
+            packageViewModel.PackageIncludedItems = includedItems.Select(o => TaxomonyViewModel.FromEntity(o.Taxonomy));
 
             return packageViewModel;
         }

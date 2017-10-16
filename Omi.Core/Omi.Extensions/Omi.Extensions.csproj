@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Omi.Base\Omi.Base.csproj" />
+    <ProjectReference Include="..\Omi.Data\Omi.Data.csproj" />
     <ProjectReference Include="..\Omi.Packages\Omi.Packages.csproj" />
   </ItemGroup>
 

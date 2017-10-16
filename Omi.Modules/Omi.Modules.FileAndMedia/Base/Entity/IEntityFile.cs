@@ -8,7 +8,11 @@ namespace Omi.Modules.FileAndMedia.Base.Entity
 {
     public interface IEntityFile<T> : IEntity
     {
+        long EntityId { get; set; }
+
         long FileEntityId { get; set; }
+
+        int UsingType { get; set; }
 
         T Entity { get; set; }
         FileEntity FileEntity { get; set; }
