@@ -17,6 +17,9 @@ namespace Omi.Modules.HomeBuilder.Entities
         public int TotalApartment { get; set; }
         public int StartedYear { get; set; }
 
+        public string MapLatitude { get; set; }
+        public string MapLongitude { get; set; }
+
         public string Language { get; set; }
 
         public long ProjectId { get; set; }

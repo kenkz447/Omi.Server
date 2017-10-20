@@ -1,10 +1,8 @@
 ﻿using Omi.Modular;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Omi.Modules.HomeBuilder.DbSeed;
 using Omi.Modules.HomeBuilder.Services;
-using System.Threading.Tasks;
 using System.Linq;
 
 namespace Omi.Modules.HomeBuilder
@@ -27,11 +25,13 @@ namespace Omi.Modules.HomeBuilder
                 var packageIncludedSeed = new PackageIncludedSeed();
                 var houseStyleSeed = new HouseStyleSeed();
                 var projectTypeSeed = new ProjectTypeSeed();
+                var projectStatusSeed = new ProjectStatusSeed();
 
                 await designThemeSeed.SeedAsync(dbContext);
                 await packageIncludedSeed.SeedAsync(dbContext);
                 await houseStyleSeed.SeedAsync(dbContext);
                 await projectTypeSeed.SeedAsync(dbContext);
+                await projectStatusSeed.SeedAsync(dbContext);
             }
         }
     }

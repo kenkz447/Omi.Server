@@ -11,6 +11,9 @@ using Omi.Modules.ModuleBase.ViewModels;
 using Omi.Modules.Location.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Omi.Data;
+using Microsoft.AspNetCore.Authorization;
+using Omi.Base.ViewModel;
+using Omi.Modules.HomeBuilder.Entities;
 
 namespace Omi.Modules.HomeBuilder.Controllers
 {
@@ -34,13 +37,15 @@ namespace Omi.Modules.HomeBuilder.Controllers
                 if (_emptyProjectViewModel != null)
                     return _emptyProjectViewModel;
 
-                var projectTypes = _projectService.GetAllProjectTypes();
-                var geographicaLocations = _projectService.getAllGeographicaLocations();
+                var projectStatus = _projectService.GetAllProjectStatus();
+                var projectTypes = _projectService.GetAllProjectType();
+                var cities = _projectService.GetAllCity();
 
                 _emptyProjectViewModel = new ProjectViewModelExtended
                 {
+                    AvaliableProjectStatus = projectStatus.Select(o => TaxomonyViewModel.FromEntity(o)),
                     AvaliableProjectTypes = projectTypes.Select(o => TaxomonyViewModel.FromEntity(o)),
-                    AvaliableGeographicaLocations = geographicaLocations.Select(o => GeographicaLocationViewModel.FromEntity(o)),
+                    AvaliableGeographicaLocations = cities.Select(o => GeographicaLocationViewModel.FromEntity(o)),
                 };
 
                 return _emptyProjectViewModel;
@@ -50,15 +55,51 @@ namespace Omi.Modules.HomeBuilder.Controllers
         public BaseJsonResult GetEmptyProjectViewModel()
             => new BaseJsonResult(Base.Properties.Resources.POST_SUCCEEDED, EmptyProjectViewModel);
 
+        [AllowAnonymous]
+        public BaseJsonResult GetAllCity()
+        {
+            var cities = _projectService.GetAllCity();
+            var cityViewModels = cities.Select(o => GeographicaLocationViewModel.FromEntity(o));
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, cityViewModels);
+        }
+
+        [AllowAnonymous]
+        public BaseJsonResult GetAllProjectStatus()
+        {
+            var projectStatus = _projectService.GetAllProjectStatus();
+            var projectStatusViewModels = projectStatus.Select(o => TaxomonyViewModel.FromEntity(o));
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, projectStatusViewModels);
+        }
+
+        [AllowAnonymous]
+        public BaseJsonResult GetAllProjectTypes()
+        {
+            var projectTypes = _projectService.GetAllProjectType();
+            var projectTypeViewModels = projectTypes.Select(o => TaxomonyViewModel.FromEntity(o));
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, projectTypeViewModels);
+        }
+
+        [AllowAnonymous]
+        public async Task<BaseJsonResult> GetProjects(ProjectFilterViewModel viewModel)
+        {
+            var serviceModel = ProjectFilterServiceModel.FromViewModel(viewModel); 
+            var entities = await _projectService.GetProjects(serviceModel);
+
+            var viewModels = new PageEntityViewModel<Project, ProjectViewModel>(entities, o => ProjectViewModelExtended.FromEntity(o, EmptyProjectViewModel));
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModels);
+        }
+
         public async Task<BaseJsonResult> GetProject(long projectId)
         {
             var project = await _projectService.GetProjectById(projectId);
 
-            var viewModel = ProjectViewModelExtended.FromEntity(project);
-            viewModel.AvaliableGeographicaLocations = EmptyProjectViewModel.AvaliableGeographicaLocations;
-            viewModel.AvaliableProjectTypes = EmptyProjectViewModel.AvaliableProjectTypes;
+            var projectViewModel = ProjectViewModelExtended.FromEntity(project, EmptyProjectViewModel);
 
-            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModel);
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, projectViewModel);
         }
 
         [HttpPost]

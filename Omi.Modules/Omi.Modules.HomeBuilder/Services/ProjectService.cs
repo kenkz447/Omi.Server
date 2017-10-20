@@ -29,10 +29,13 @@ namespace Omi.Modules.HomeBuilder.Services
             _locationService = locationService;
         }
 
-        public IEnumerable<Taxonomy> GetAllProjectTypes()
+        public IEnumerable<Taxonomy> GetAllProjectType()
             => _context.Taxonomy.Include(o => o.TaxonomyDetails).Where(o => o.TaxonomyTypeId == ProjectTypeSeed.ProjectType.Id).AsNoTracking();
 
-        public IEnumerable<GeographicaLocation> getAllGeographicaLocations()
+        public IEnumerable<Taxonomy> GetAllProjectStatus()
+            => _context.Taxonomy.Include(o => o.TaxonomyDetails).Where(o => o.TaxonomyTypeId == ProjectStatusSeed.ProjectStatus.Id).AsNoTracking();
+
+        public IEnumerable<GeographicaLocation> GetAllCity()
             => _locationService.GetGeographicaLocations();
 
         private IQueryable<Project> GetProjects()
@@ -44,16 +47,17 @@ namespace Omi.Modules.HomeBuilder.Services
             .ThenInclude(o => o.Taxonomy)
             .ThenInclude(o => o.TaxonomyDetails)
             .Include(o => o.City)
-            .AsNoTracking()
             .AsQueryable();
 
         public async Task<PaginatedList<Project>> GetProjects(ProjectFilterServiceModel serviceModel)
         {
-            var Projects = GetProjects();
+            var Projects = GetProjects().AsNoTracking();
 
-            foreach (var taxonomyId in serviceModel.TaxonomyIds)
-                if (taxonomyId != default(long))
-                    Projects = Projects.Where(o => o.EntityTaxonomies.Select(e => e.TaxonomyId).Contains(taxonomyId));
+            foreach (var taxonomyName in serviceModel.TaxonomyNames)
+                Projects = Projects.Where(o => o.EntityTaxonomies.Select(e => e.Taxonomy.Name).Contains(taxonomyName));
+
+            if(serviceModel.CityName != null)
+                Projects = Projects.Where(o => o.City.Name == serviceModel.CityName);
 
             Projects = Projects.OrderByDescending(o => o.Id);
 
@@ -63,10 +67,10 @@ namespace Omi.Modules.HomeBuilder.Services
         }
 
         public async Task<Project> GetProjectById(long projectId)
-            => await GetProjects().SingleAsync(o => o.Id == projectId);
+            => await GetProjects().AsNoTracking().SingleAsync(o => o.Id == projectId);
 
         public async Task<Project> GetProjectByName(string projectName)
-            => await GetProjects().SingleAsync(o => o.Name == projectName);
+            => await GetProjects().AsNoTracking().SingleAsync(o => o.Name == projectName);
 
         public async Task<Project> CreateNewProject(ProjectServiceModel serviceModel)
         {
@@ -92,7 +96,7 @@ namespace Omi.Modules.HomeBuilder.Services
 
         public async Task<Project> UpdateProjectAsync(ProjectServiceModel serviceModel)
         {
-            var project = await GetProjectById(serviceModel.Id);
+            var project = await GetProjects().SingleAsync(o => o.Id == serviceModel.Id);
             var newProject = serviceModel.ToEntity();
 
             _context.Entry(project).CurrentValues.SetValues(newProject);

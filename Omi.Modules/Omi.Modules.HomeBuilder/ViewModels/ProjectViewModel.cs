@@ -44,7 +44,7 @@ namespace Omi.Modules.HomeBuilder.ViewModels
         public int StartedYear { get; set; }
 
         [Required]
-        public long CityId { get; set; }
+        public int? CityId { get; set; }
 
         [Required]
         public long ProjectTypeId { get; set; }
@@ -52,6 +52,8 @@ namespace Omi.Modules.HomeBuilder.ViewModels
         [Required]
         public FileEntityInfo Avatar { get; set; }
 
+        public string MapLatitude { get; set; }
+        public string MapLongitude { get; set; }
     }
 
     public class ProjectViewModelExtended : ProjectViewModel
@@ -61,30 +63,37 @@ namespace Omi.Modules.HomeBuilder.ViewModels
         public TaxomonyViewModel ProjectType { get; set; }
 
         public IEnumerable<TaxomonyViewModel> AvaliableProjectTypes { get; set; }
+        public IEnumerable<TaxomonyViewModel> AvaliableProjectStatus { get; set; }
+
         public IEnumerable<GeographicaLocationViewModel> AvaliableGeographicaLocations { get; set; }
 
-        public static ProjectViewModelExtended FromEntity(Project entity)
+        public static ProjectViewModelExtended FromEntity(Project entity, ProjectViewModelExtended baseViewModel = null)
         {
             var entityDetail = entity.ProjectDetails.FirstOrDefault();
             var avatarFile = entity.EnitityFiles.FirstOrDefault(o => o.UsingType == (int)FileUsingType.Avatar).FileEntity;
             var projectType = entity.EntityTaxonomies.FirstOrDefault(o => o.Taxonomy.TaxonomyTypeId == ProjectTypeSeed.ProjectType.Id);
 
-            return new ProjectViewModelExtended()
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Title = entityDetail.Title,
-                Area = entityDetail.Area,
-                Language = entityDetail.Language,
-                Street = entityDetail.Street,
-                StartedYear = entityDetail.StartedYear,
-                TotalApartment = entityDetail.TotalApartment,
-                Website = entityDetail.Website,
-                Invertor = entityDetail.Investor,
-                CityId = entity.CityId,
-                Avatar = FileEntityInfo.FromEntity(avatarFile),
-                ProjectTypeId = projectType.ProjectId
-            };
+            var resultViewModel = baseViewModel ?? new ProjectViewModelExtended();
+
+            resultViewModel.Id = entity.Id;
+            resultViewModel.Name = entity.Name;
+
+            resultViewModel.Title = entityDetail.Title;
+            resultViewModel.Area = entityDetail.Area;
+            resultViewModel.Language = entityDetail.Language;
+            resultViewModel.Street = entityDetail.Street;
+            resultViewModel.StartedYear = entityDetail.StartedYear;
+            resultViewModel.TotalApartment = entityDetail.TotalApartment;
+            resultViewModel.Website = entityDetail.Website;
+            resultViewModel.Invertor = entityDetail.Investor;
+            resultViewModel.MapLatitude = entityDetail.MapLatitude;
+            resultViewModel.MapLongitude = entityDetail.MapLongitude;
+
+            resultViewModel.CityId = entity.CityId;
+            resultViewModel.Avatar = FileEntityInfo.FromEntity(avatarFile);
+            resultViewModel.ProjectTypeId = projectType.TaxonomyId;
+
+            return resultViewModel;
         }
     }
 }

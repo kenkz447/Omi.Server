@@ -11,9 +11,10 @@ using System;
 namespace Omi.DatabaseDesign.Migrations
 {
     [DbContext(typeof(OmiDbContext))]
-    partial class OmiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171017144900_UpdateTable_Project_Drop_CityId")]
+    partial class UpdateTable_Project_Drop_CityId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,8 +302,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CityId");
-
                     b.Property<string>("CreateByUserId");
 
                     b.Property<DateTime?>("CreateDate");
@@ -318,8 +317,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.Property<int>("Status");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
 
                     b.HasIndex("CreateByUserId");
 
@@ -340,10 +337,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.Property<string>("Investor");
 
                     b.Property<string>("Language");
-
-                    b.Property<string>("MapLatitude");
-
-                    b.Property<string>("MapLongitude");
 
                     b.Property<long>("ProjectId");
 
@@ -747,10 +740,6 @@ namespace Omi.DatabaseDesign.Migrations
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.Project", b =>
                 {
-                    b.HasOne("Omi.Modules.Location.Entities.GeographicaLocation", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
                     b.HasOne("Omi.Data.ApplicationUser", "CreateByUser")
                         .WithMany()
                         .HasForeignKey("CreateByUserId");

@@ -21,8 +21,8 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
 
         public long AvatarFileId { get; set; }
 
-        public long CityId { get; set; }
-
+        public int? CityId { get; set; }
+          
         public ProjectDetail Detail { get; set; }
 
         public ApplicationUser User { get; set; }
@@ -41,7 +41,8 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
                 },
                 EnitityFiles = GetEntityFiles(),
                 EntityTaxonomies = new List<ProjectTaxonomy>(
-                    TaxonomyIds.Select(taxonomyId => new ProjectTaxonomy { TaxonomyId = taxonomyId, ProjectId = Id }))
+                    TaxonomyIds.Select(taxonomyId => new ProjectTaxonomy { TaxonomyId = taxonomyId, ProjectId = Id })),
+                CityId = CityId
             };
             return newProject;
         }
@@ -69,6 +70,7 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
                 Name = viewModel.Name,
                 Detail = new ProjectDetail
                 {
+                    ProjectId = viewModel.Id,
                     Title = viewModel.Title,
                     Language = viewModel.Language,
                     Area = viewModel.Area,
@@ -76,7 +78,9 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
                     StartedYear = viewModel.StartedYear,
                     TotalApartment = viewModel.TotalApartment,
                     Website = viewModel.Website,
-                    Street = viewModel.Street
+                    Street = viewModel.Street,
+                    MapLatitude = viewModel.MapLatitude,
+                    MapLongitude = viewModel.MapLongitude
                 },
                 AvatarFileId = viewModel.Avatar.FileId,
                 TaxonomyIds = new List<long>

@@ -28,6 +28,5 @@ namespace Omi.Modules.Location.Entities
         public int? ParentId { get; set; }
 
         public GeographicaLocation Parent { get; set; }
-
     }
 }

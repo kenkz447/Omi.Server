@@ -19,7 +19,8 @@ namespace Omi.Modules.HomeBuilder
                 .HasKey(o => new { o.EntityId, o.FileEntityId });
 
             builder.Entity<Project>()
-                            .HasMany(o => o.ProjectDetails);
+                .HasMany(o => o.ProjectDetails);
+
             builder.Entity<ProjectDetail>();
 
             builder.Entity<ProjectTaxonomy>()

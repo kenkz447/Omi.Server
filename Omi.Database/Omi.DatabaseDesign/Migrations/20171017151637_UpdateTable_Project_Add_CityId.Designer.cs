@@ -11,9 +11,10 @@ using System;
 namespace Omi.DatabaseDesign.Migrations
 {
     [DbContext(typeof(OmiDbContext))]
-    partial class OmiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171017151637_UpdateTable_Project_Add_CityId")]
+    partial class UpdateTable_Project_Add_CityId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -340,10 +341,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.Property<string>("Investor");
 
                     b.Property<string>("Language");
-
-                    b.Property<string>("MapLatitude");
-
-                    b.Property<string>("MapLongitude");
 
                     b.Property<long>("ProjectId");
 

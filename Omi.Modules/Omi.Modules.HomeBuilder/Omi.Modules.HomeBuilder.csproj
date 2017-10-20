@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Omi.Modules.ModuleBase\Omi.Modules.ModuleBase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
+
 </Project>
