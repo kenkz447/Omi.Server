@@ -25,7 +25,7 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "Carpentry",
-                    Icon = "/images/package-carpentry.svg",
+                    Icon = "/images/package-carpentry.png",
                     Language = "en-US"
                 }
             }
@@ -38,7 +38,7 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "Feature Wall",
-                    Icon = "/images/package-feature-wall.svg",
+                    Icon = "/images/package-feature-wall.png",
                     Language = "en-US"
                 }
             }
@@ -51,7 +51,7 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "Plumbing",
-                    Icon = "/images/package-plumbing.svg",
+                    Icon = "/images/package-plumbing.png",
                     Language = "en-US"
                 }
             }
@@ -64,7 +64,7 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "Electrical Wiring",
-                    Icon = "/images/package-electrical-wiring.svg",
+                    Icon = "/images/package-electric-wiring.png",
                     Language = "en-US"
                 }
             }
@@ -77,7 +77,7 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "Flooring",
-                    Icon = "/images/package-flooring.svg",
+                    Icon = "/images/package-flooring.png",
                     Language = "en-US"
                 }
             }
@@ -90,7 +90,59 @@ namespace Omi.Modules.HomeBuilder.DbSeed
                 new TaxonomyDetail
                 {
                     Label = "False Ceiling",
-                    Icon = "/images/package-false-ceiling.svg",
+                    Icon = "/images/package-false-ceiling.png",
+                    Language = "en-US"
+                }
+            }
+        };
+        public static Taxonomy Furniture = new Taxonomy
+        {
+            Name = "package-furniture",
+            TaxonomyDetails = new List<TaxonomyDetail>
+            {
+                new TaxonomyDetail
+                {
+                    Label = "Furniture",
+                    Icon = "/images/package-furniture.png",
+                    Language = "en-US"
+                }
+            }
+        };
+        public static Taxonomy Decoration = new Taxonomy
+        {
+            Name = "package-decoration",
+            TaxonomyDetails = new List<TaxonomyDetail>
+            {
+                new TaxonomyDetail
+                {
+                    Label = "Decoration",
+                    Icon = "/images/package-decoration.png",
+                    Language = "en-US"
+                }
+            }
+        };
+        public static Taxonomy Design = new Taxonomy
+        {
+            Name = "package-design",
+            TaxonomyDetails = new List<TaxonomyDetail>
+            {
+                new TaxonomyDetail
+                {
+                    Label = "Design",
+                    Icon = "/images/package-design.png",
+                    Language = "en-US"
+                }
+            }
+        };
+        public static Taxonomy Painting = new Taxonomy
+        {
+            Name = "package-painting",
+            TaxonomyDetails = new List<TaxonomyDetail>
+            {
+                new TaxonomyDetail
+                {
+                    Label = "Painting",
+                    Icon = "/images/package-painting.png",
                     Language = "en-US"
                 }
             }
@@ -112,6 +164,10 @@ namespace Omi.Modules.HomeBuilder.DbSeed
             ElectricalWiring.TaxonomyTypeId = PackageIncludedItem.Id;
             Flooring.TaxonomyTypeId = PackageIncludedItem.Id;
             FalseCeiling.TaxonomyTypeId = PackageIncludedItem.Id;
+            Furniture.TaxonomyTypeId = PackageIncludedItem.Id;
+            Decoration.TaxonomyTypeId = PackageIncludedItem.Id;
+            Design.TaxonomyTypeId = PackageIncludedItem.Id;
+            Painting.TaxonomyTypeId = PackageIncludedItem.Id;
 
             var taxonomySet = context.Set<Taxonomy>();
 
@@ -121,6 +177,10 @@ namespace Omi.Modules.HomeBuilder.DbSeed
             ElectricalWiring = await SeedEntityAsync(taxonomySet, ElectricalWiring);
             Flooring = await SeedEntityAsync(taxonomySet, Flooring);
             FalseCeiling = await SeedEntityAsync(taxonomySet, FalseCeiling);
+            Furniture = await SeedEntityAsync(taxonomySet, Furniture);
+            Decoration = await SeedEntityAsync(taxonomySet, Decoration);
+            Design = await SeedEntityAsync(taxonomySet, Design);
+            Painting = await SeedEntityAsync(taxonomySet, Painting);
 
             await context.SaveChangesAsync();
         }

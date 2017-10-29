@@ -7,8 +7,8 @@ using System.Text;
 
 namespace Omi.Modules.HomeBuilder.Entities
 {
-    public class Package : 
-        EntityWithEntityTypeId, 
+    public class Package :
+        BaseEntity, 
         IEntityWithName,
         IEntityWithTaxonomies<Package, PackageTaxonomy>,
         IEntityWithFiles<Package, PackageFile>

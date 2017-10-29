@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Omi.Data.Entity
 {
-    public class EntityWithTypedId<T> : IEntityWithTypedId<T>
+    public class EntityWithTypeId<T> : IEntityWithTypeId<T>
     {
         public T Id { get; set; }
     }

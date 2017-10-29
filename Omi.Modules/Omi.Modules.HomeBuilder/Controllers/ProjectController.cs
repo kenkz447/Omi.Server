@@ -55,6 +55,40 @@ namespace Omi.Modules.HomeBuilder.Controllers
         public BaseJsonResult GetEmptyProjectViewModel()
             => new BaseJsonResult(Base.Properties.Resources.POST_SUCCEEDED, EmptyProjectViewModel);
 
+
+
+        [HttpPost]
+        public async Task<BaseJsonResult> CreateNewProject([FromBody]ProjectViewModel viewModel)
+        {
+            var serviceModel = ProjectServiceModel.FromViewModel(viewModel);
+            serviceModel.User = CurrentUser;
+
+            var newProject = await _projectService.CreateNewProject(serviceModel);
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, newProject.Id);
+        }
+
+        [HttpPost]
+        public async Task<BaseJsonResult> UpdateProject([FromBody]ProjectViewModel model)
+        {
+            var projectServiceModel = ProjectServiceModel.FromViewModel(model);
+            projectServiceModel.User = CurrentUser;
+
+            await _projectService.UpdateProjectAsync(projectServiceModel);
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, model.Id);
+        }
+
+        #region Public
+        [AllowAnonymous]
+        public async Task<BaseJsonResult> GetProject(long projectId)
+        {
+            var project = await _projectService.GetProjectById(projectId);
+            var projectViewModel = ProjectViewModelExtended.FromEntity(project, EmptyProjectViewModel);
+
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, projectViewModel);
+        }
+
         [AllowAnonymous]
         public BaseJsonResult GetAllCity()
         {
@@ -85,43 +119,13 @@ namespace Omi.Modules.HomeBuilder.Controllers
         [AllowAnonymous]
         public async Task<BaseJsonResult> GetProjects(ProjectFilterViewModel viewModel)
         {
-            var serviceModel = ProjectFilterServiceModel.FromViewModel(viewModel); 
+            var serviceModel = ProjectFilterServiceModel.FromViewModel(viewModel);
             var entities = await _projectService.GetProjects(serviceModel);
 
             var viewModels = new PageEntityViewModel<Project, ProjectViewModel>(entities, o => ProjectViewModelExtended.FromEntity(o, EmptyProjectViewModel));
 
             return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModels);
         }
-
-        public async Task<BaseJsonResult> GetProject(long projectId)
-        {
-            var project = await _projectService.GetProjectById(projectId);
-
-            var projectViewModel = ProjectViewModelExtended.FromEntity(project, EmptyProjectViewModel);
-
-            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, projectViewModel);
-        }
-
-        [HttpPost]
-        public async Task<BaseJsonResult> CreateNewProject([FromBody]ProjectViewModel viewModel)
-        {
-            var serviceModel = ProjectServiceModel.FromViewModel(viewModel);
-            serviceModel.User = CurrentUser;
-
-            var newProject = await _projectService.CreateNewProject(serviceModel);
-
-            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, newProject.Id);
-        }
-
-        [HttpPost]
-        public async Task<BaseJsonResult> UpdateProject([FromBody]ProjectViewModel model)
-        {
-            var projectServiceModel = ProjectServiceModel.FromViewModel(model);
-            projectServiceModel.User = CurrentUser;
-
-            await _projectService.UpdateProjectAsync(projectServiceModel);
-
-            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, model.Id);
-        }
+        #endregion
     }
 }

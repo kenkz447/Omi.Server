@@ -4,14 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Omi.Base;
 using Omi.Data;
-using Omi.Extensions;
-using Omi.Modules.HomeBuilder.ServiceModel;
 using Omi.Modules.HomeBuilder.Services;
 using Omi.Modules.HomeBuilder.ViewModels;
 using Omi.Modules.ModuleBase;
-using System.Collections.Generic;
 using System.Linq;
-using System;
 
 using static Omi.Modules.HomeBuilder.Utilities.ViewModelUtilities;
 using System.Threading.Tasks;
@@ -64,6 +60,17 @@ namespace Omi.Modules.HomeBuilder.Controllers
             var package = await _packageService.GetPackageById(packageId);
             var viewModel = ToPackageViewModel(package);
             return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, viewModel);
+        }
+
+        [AllowAnonymous]
+        public async Task<BaseJsonResult> GetNextAndPrevPackage(long packageId)
+        {
+            var nextPackage = await _packageService.GetNextPackage(packageId);
+            var prevPackage = await _packageService.GetPrevPackage(packageId);
+
+            var next = ToPackageViewModel(nextPackage);
+            var prev = ToPackageViewModel(prevPackage);
+            return new BaseJsonResult(Omi.Base.Properties.Resources.POST_SUCCEEDED, new { next, prev});
         }
 
         [AllowAnonymous]
@@ -130,6 +137,9 @@ namespace Omi.Modules.HomeBuilder.Controllers
 
         private PackageViewModel ToPackageViewModel(Package package)
         {
+            if (package == null)
+                return null;
+
             var packageViewModel = EmptyPackageViewModel;
 
             packageViewModel.Id = package.Id;

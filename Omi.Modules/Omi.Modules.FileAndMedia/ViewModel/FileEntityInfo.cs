@@ -16,6 +16,9 @@ namespace Omi.Modules.FileAndMedia.ViewModel
 
         public static FileEntityInfo FromEntity(FileEntity entity)
         {
+            if (entity == null)
+                return default;
+
             var FileEntityInfo = new FileEntityInfo
             {
                 FileId = entity.Id,

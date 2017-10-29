@@ -29,7 +29,8 @@ namespace Omi.Modules.HomeBuilder
             builder.Entity<ProjectFile>()
                 .HasKey(o => new { o.EntityId, o.FileEntityId });
 
-
+            builder.Entity<ProjectBlockFile>()
+                .HasKey(o => new { o.EntityId, o.FileEntityId });
         }
     }
 }

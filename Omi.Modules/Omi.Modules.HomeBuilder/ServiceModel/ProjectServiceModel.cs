@@ -9,6 +9,8 @@ using System.Text;
 using Omi.Modules.HomeBuilder.Utilities;
 using Omi.Modules.FileAndMedia.Base.Entity;
 using Omi.Modules.HomeBuilder.ViewModels;
+using Omi.Extensions;
+using Omi.Modules.HomeBuilder.DbSeed;
 
 namespace Omi.Modules.HomeBuilder.ServiceModel
 {
@@ -16,18 +18,15 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
         IServiceModelWithFiles<Project, ProjectFile>
     {
         public long Id { get; set; }
-
         public string Name { get; set; }
-
         public long AvatarFileId { get; set; }
-
         public int? CityId { get; set; }
           
         public ProjectDetail Detail { get; set; }
-
         public ApplicationUser User { get; set; }
 
         public IEnumerable<long> TaxonomyIds { get; set; }
+        public IEnumerable<ProjectBlock> ProjectBlocks { get; set; }
 
         public Project ToEntity()
         {
@@ -64,6 +63,29 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
 
         public static ProjectServiceModel FromViewModel(ProjectViewModel viewModel)
         {
+            var nestedProjectBlocks = viewModel.ProjectBlocks.Select(o => ProjectBlock.FromViewModel(o));
+            nestedProjectBlocks = nestedProjectBlocks.Process((tower) =>
+             {
+                 tower.ProjectId = viewModel.Id;
+                 tower.EntityTypeId = EntityTypeSeed.Tower.Id;
+                 tower.Children = tower.Children.Process(floor => {
+                     floor.EntityTypeId = EntityTypeSeed.Floor.Id;
+                     floor.Children = floor.Children.Process(room =>
+                     {
+                         room.EntityTypeId = EntityTypeSeed.Room.Id;
+                         return room;
+                     }).ToList();
+                     return floor;
+                 }).ToList();
+                 return tower;
+             });
+
+            var taxonomyIds = new List<long>();
+            if (viewModel.ProjectTypeId != default)
+                taxonomyIds.Add(viewModel.ProjectTypeId);
+            if (viewModel.ProjectStatusId != default)
+                taxonomyIds.Add(viewModel.ProjectStatusId);
+
             return new ProjectServiceModel
             {
                 Id = viewModel.Id,
@@ -82,11 +104,10 @@ namespace Omi.Modules.HomeBuilder.ServiceModel
                     MapLatitude = viewModel.MapLatitude,
                     MapLongitude = viewModel.MapLongitude
                 },
+
+                ProjectBlocks = nestedProjectBlocks,
                 AvatarFileId = viewModel.Avatar.FileId,
-                TaxonomyIds = new List<long>
-                {
-                    viewModel.ProjectTypeId
-                },
+                TaxonomyIds = taxonomyIds,
                 CityId = viewModel.CityId,
             };
         }

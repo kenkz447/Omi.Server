@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Omi.Modules.HomeBuilder.Entities
 {
-    public class PackageDetail : EntityWithTypedId<long>
+    public class PackageDetail : EntityWithTypeId<long>
     {
         public string Title { get; set; }
         public string SortText { get; set; }

@@ -14,9 +14,51 @@ using Omi.Modules.HomeBuilder.Utilities;
 using Omi.Modules.Location.Services;
 using Omi.Modules.Location.Entities;
 using Omi.Extensions;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Omi.Modules.HomeBuilder.Services
 {
+    public static class ProjectServiceExtension
+    {
+        public static void TryUpdateProjectBlocks<TKey>(this HomeBuilderDbContext context, IEnumerable<ProjectBlock> currentEntities, IEnumerable<ProjectBlock> newEntities, Func<ProjectBlock, TKey> getKey)
+        {
+            var dbSet = context.Set<ProjectBlock>();
+
+            var deletedEntities = currentEntities.Except(newEntities, getKey);
+            dbSet.RemoveRange(deletedEntities);
+
+            var addedEntities = newEntities.Except(currentEntities, getKey);
+            dbSet.AddRange(addedEntities);
+
+            var modifiedEntities = newEntities.Where(o => o.Id > 0);
+
+            foreach (var entity in modifiedEntities)
+            {
+                var existingItem = currentEntities.FirstOrDefault(o => o.Id == entity.Id);
+
+                var entityEntry = context.Entry(existingItem);
+                entityEntry.CurrentValues.SetValues(entity);
+
+                entityEntry.Property(o => o.ParentId).IsModified = false;
+
+                if (entityEntry.Entity.Children.Count() != 0 && entity.Children.Count() != 0)
+                    context.TryUpdateProjectBlocks(entityEntry.Entity.Children, entity.Children, getKey);
+
+                context.TryUpdateManyToMany(existingItem.ProjectBlockFiles, entity.ProjectBlockFiles, o => o.FileEntityId);
+
+                foreach (var newDetail in entity.ProjectBlockDetails)
+                {
+                    var oldDetail = entityEntry.Entity.ProjectBlockDetails.FirstOrDefault(o => o.Language == newDetail.Language);
+                    if (oldDetail.Language == newDetail.Language)
+                    {
+                        newDetail.Id = oldDetail.Id;
+                        context.Entry(oldDetail).CurrentValues.SetValues(newDetail);
+                    }
+                }
+            }
+        }
+    }
+
     public class ProjectService
     {
         private readonly HomeBuilderDbContext _context;
@@ -41,12 +83,16 @@ namespace Omi.Modules.HomeBuilder.Services
         private IQueryable<Project> GetProjects()
             => _context.Project
             .Include(o => o.ProjectDetails)
-            .Include(o => o.EnitityFiles)
-            .ThenInclude(o => o.FileEntity)
-            .Include(o => o.EntityTaxonomies)
-            .ThenInclude(o => o.Taxonomy)
-            .ThenInclude(o => o.TaxonomyDetails)
+            .Include(o => o.EnitityFiles).ThenInclude(o => o.FileEntity)
+            .Include(o => o.EntityTaxonomies).ThenInclude(o => o.Taxonomy).ThenInclude(o => o.TaxonomyDetails)
             .Include(o => o.City)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.ProjectBlockDetails)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.ProjectBlockFiles)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.Children).ThenInclude(o => o.ProjectBlockDetails)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.Children).ThenInclude(o => o.ProjectBlockFiles)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.Children).ThenInclude(o => o.Children).ThenInclude(o => o.ProjectBlockDetails)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.Children).ThenInclude(o => o.Children).ThenInclude(o => o.ProjectBlockFiles)
+            .Include(o => o.ProjectBlocks).ThenInclude(o => o.Children).ThenInclude(o => o.Children).ThenInclude(o => o.ProjectBlockFiles).ThenInclude(o => o.FileEntity)
             .AsQueryable();
 
         public async Task<PaginatedList<Project>> GetProjects(ProjectFilterServiceModel serviceModel)
@@ -84,7 +130,8 @@ namespace Omi.Modules.HomeBuilder.Services
                 EnitityFiles = serviceModel.GetEntityFiles(),
                 EntityTaxonomies = new List<ProjectTaxonomy>(
                     serviceModel.TaxonomyIds.Select(taxonomyId => new ProjectTaxonomy { TaxonomyId = taxonomyId })),
-                CityId = serviceModel.CityId
+                CityId = serviceModel.CityId,
+                ProjectBlocks = serviceModel.ProjectBlocks
             };
 
             var add = await _context.Project.AddAsync(newProject);
@@ -115,6 +162,8 @@ namespace Omi.Modules.HomeBuilder.Services
                 }
             }
 
+            _context.TryUpdateProjectBlocks(project.ProjectBlocks, serviceModel.ProjectBlocks, o => o.Id);
+
             _context.TryUpdateManyToMany(project.EnitityFiles, newProject.EnitityFiles, o => o.FileEntityId);
             _context.TryUpdateManyToMany(project.EntityTaxonomies, newProject.EntityTaxonomies, o => o.TaxonomyId);
 
@@ -122,5 +171,6 @@ namespace Omi.Modules.HomeBuilder.Services
 
             return newProject;
         }
+
     }
 }

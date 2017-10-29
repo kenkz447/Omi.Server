@@ -26,12 +26,14 @@ namespace Omi.Modules.HomeBuilder
                 var houseStyleSeed = new HouseStyleSeed();
                 var projectTypeSeed = new ProjectTypeSeed();
                 var projectStatusSeed = new ProjectStatusSeed();
+                var entityTypeSeed = new EntityTypeSeed();
 
                 await designThemeSeed.SeedAsync(dbContext);
                 await packageIncludedSeed.SeedAsync(dbContext);
                 await houseStyleSeed.SeedAsync(dbContext);
                 await projectTypeSeed.SeedAsync(dbContext);
                 await projectStatusSeed.SeedAsync(dbContext);
+                await entityTypeSeed.SeedAsync(dbContext);
             }
         }
     }

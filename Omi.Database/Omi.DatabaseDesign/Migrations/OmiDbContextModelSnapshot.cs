@@ -227,8 +227,6 @@ namespace Omi.DatabaseDesign.Migrations
 
                     b.Property<DateTime?>("DeleteDate");
 
-                    b.Property<long?>("EntityTypeId");
-
                     b.Property<string>("Name");
 
                     b.Property<int>("Status");
@@ -238,8 +236,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.HasIndex("CreateByUserId");
 
                     b.HasIndex("DeleteByUserId");
-
-                    b.HasIndex("EntityTypeId");
 
                     b.ToTable("Package");
                 });
@@ -311,8 +307,6 @@ namespace Omi.DatabaseDesign.Migrations
 
                     b.Property<DateTime?>("DeleteDate");
 
-                    b.Property<long?>("EntityTypeId");
-
                     b.Property<string>("Name");
 
                     b.Property<int>("Status");
@@ -325,9 +319,68 @@ namespace Omi.DatabaseDesign.Migrations
 
                     b.HasIndex("DeleteByUserId");
 
+                    b.ToTable("Project");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlock", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("EntityTypeId");
+
+                    b.Property<long?>("PackageId");
+
+                    b.Property<long?>("ParentId");
+
+                    b.Property<long?>("ProjectId");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("EntityTypeId");
 
-                    b.ToTable("Project");
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectBlock");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlockDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Label");
+
+                    b.Property<string>("Language");
+
+                    b.Property<long?>("ProjectBlockId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectBlockId");
+
+                    b.ToTable("ProjectBlockDetail");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlockFile", b =>
+                {
+                    b.Property<long>("EntityId");
+
+                    b.Property<long>("FileEntityId");
+
+                    b.Property<string>("JsonData");
+
+                    b.Property<int>("UsingType");
+
+                    b.HasKey("EntityId", "FileEntityId");
+
+                    b.HasIndex("FileEntityId");
+
+                    b.ToTable("ProjectBlockFile");
                 });
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectDetail", b =>
@@ -705,10 +758,6 @@ namespace Omi.DatabaseDesign.Migrations
                     b.HasOne("Omi.Data.ApplicationUser", "DeleteByUser")
                         .WithMany()
                         .HasForeignKey("DeleteByUserId");
-
-                    b.HasOne("Omi.Modules.ModuleBase.Entities.EntityType", "EntityType")
-                        .WithMany()
-                        .HasForeignKey("EntityTypeId");
                 });
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.PackageDetail", b =>
@@ -758,10 +807,46 @@ namespace Omi.DatabaseDesign.Migrations
                     b.HasOne("Omi.Data.ApplicationUser", "DeleteByUser")
                         .WithMany()
                         .HasForeignKey("DeleteByUserId");
+                });
 
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlock", b =>
+                {
                     b.HasOne("Omi.Modules.ModuleBase.Entities.EntityType", "EntityType")
                         .WithMany()
-                        .HasForeignKey("EntityTypeId");
+                        .HasForeignKey("EntityTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId");
+
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.ProjectBlock", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId");
+
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.Project", "Project")
+                        .WithMany("ProjectBlocks")
+                        .HasForeignKey("ProjectId");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlockDetail", b =>
+                {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.ProjectBlock", "ProjectBlock")
+                        .WithMany("ProjectBlockDetails")
+                        .HasForeignKey("ProjectBlockId");
+                });
+
+            modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectBlockFile", b =>
+                {
+                    b.HasOne("Omi.Modules.HomeBuilder.Entities.ProjectBlock", "Entity")
+                        .WithMany("ProjectBlockFiles")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Omi.Modules.FileAndMedia.Entities.FileEntity", "FileEntity")
+                        .WithMany()
+                        .HasForeignKey("FileEntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Omi.Modules.HomeBuilder.Entities.ProjectDetail", b =>

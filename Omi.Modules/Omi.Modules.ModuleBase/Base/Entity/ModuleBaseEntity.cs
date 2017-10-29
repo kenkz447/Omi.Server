@@ -8,7 +8,7 @@ namespace Omi.Modules.ModuleBase.Base.Entity
         BaseEntity,
         IEntityWithEntityTypeId
     {
-        public long? EntityTypeId { get; set; }
+        public long EntityTypeId { get; set; }
         public virtual EntityType EntityType { get; set; }
     }
 }

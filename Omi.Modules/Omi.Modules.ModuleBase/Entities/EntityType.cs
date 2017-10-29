@@ -6,7 +6,9 @@ using System.Text;
 
 namespace Omi.Modules.ModuleBase.Entities
 {
-    public class EntityType : BaseEntity
+    public class EntityType : 
+        BaseEntity,
+        IEntityWithName
     {
         public EntityType()
         {

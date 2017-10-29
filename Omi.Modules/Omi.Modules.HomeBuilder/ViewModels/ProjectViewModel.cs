@@ -50,10 +50,15 @@ namespace Omi.Modules.HomeBuilder.ViewModels
         public long ProjectTypeId { get; set; }
 
         [Required]
+        public long ProjectStatusId { get; set; }
+
+        [Required]
         public FileEntityInfo Avatar { get; set; }
 
         public string MapLatitude { get; set; }
         public string MapLongitude { get; set; }
+
+        public IEnumerable<ProjectBlockViewModel> ProjectBlocks { get; set; }
     }
 
     public class ProjectViewModelExtended : ProjectViewModel
@@ -72,6 +77,7 @@ namespace Omi.Modules.HomeBuilder.ViewModels
             var entityDetail = entity.ProjectDetails.FirstOrDefault();
             var avatarFile = entity.EnitityFiles.FirstOrDefault(o => o.UsingType == (int)FileUsingType.Avatar).FileEntity;
             var projectType = entity.EntityTaxonomies.FirstOrDefault(o => o.Taxonomy.TaxonomyTypeId == ProjectTypeSeed.ProjectType.Id);
+            var projectStatus = entity.EntityTaxonomies.FirstOrDefault(o => o.Taxonomy.TaxonomyTypeId == ProjectStatusSeed.ProjectStatus.Id);
 
             var resultViewModel = baseViewModel ?? new ProjectViewModelExtended();
 
@@ -90,8 +96,18 @@ namespace Omi.Modules.HomeBuilder.ViewModels
             resultViewModel.MapLongitude = entityDetail.MapLongitude;
 
             resultViewModel.CityId = entity.CityId;
-            resultViewModel.Avatar = FileEntityInfo.FromEntity(avatarFile);
             resultViewModel.ProjectTypeId = projectType.TaxonomyId;
+            resultViewModel.ProjectType = TaxomonyViewModel.FromEntity(projectType.Taxonomy);
+
+            if (projectStatus != null)
+            {
+                resultViewModel.ProjectStatusId = projectStatus.TaxonomyId;
+                resultViewModel.ProjectType = TaxomonyViewModel.FromEntity(projectStatus.Taxonomy);
+            }
+
+            resultViewModel.ProjectBlocks = entity.ProjectBlocks.Select(o => ProjectBlockViewModelExtension.FromEnitity(o));
+
+            resultViewModel.Avatar = FileEntityInfo.FromEntity(avatarFile);
 
             return resultViewModel;
         }

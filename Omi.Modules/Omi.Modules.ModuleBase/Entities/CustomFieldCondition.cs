@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Omi.Modules.ModuleBase.Entities
 {
-    public class CustomFieldCondition : EntityWithTypedId<long>
+    public class CustomFieldCondition : EntityWithTypeId<long>
     {
         public long EntityGroupId { get; set; }
         public long TaxonomyId { get; set; }

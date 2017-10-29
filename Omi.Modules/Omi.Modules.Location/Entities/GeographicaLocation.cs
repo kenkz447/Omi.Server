@@ -8,7 +8,7 @@ using System.Text;
 namespace Omi.Modules.Location.Entities
 {
     public class GeographicaLocation : 
-        IEntityWithTypedId<int>, 
+        IEntityWithTypeId<int>, 
         IEntityWithName
     {
         [Key]

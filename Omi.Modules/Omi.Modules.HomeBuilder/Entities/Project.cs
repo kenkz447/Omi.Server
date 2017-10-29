@@ -10,7 +10,7 @@ using System.Text;
 namespace Omi.Modules.HomeBuilder.Entities
 {
     public class Project :
-        EntityWithEntityTypeId,
+        BaseEntity,
         IEntityWithName,
         IEntityWithFiles<Project, ProjectFile>
     {
@@ -23,5 +23,6 @@ namespace Omi.Modules.HomeBuilder.Entities
         public IEnumerable<ProjectDetail> ProjectDetails { get; set; }
         public IEnumerable<ProjectTaxonomy> EntityTaxonomies { get; set; }
         public IEnumerable<ProjectFile> EnitityFiles { get; set; }
+        public IEnumerable<ProjectBlock> ProjectBlocks { get; set; }
     }
 }

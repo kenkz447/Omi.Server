@@ -2,7 +2,7 @@
 
 namespace Omi.Data.Entity
 {
-    public interface IBaseEntity : IEntityWithTypedId<long>
+    public interface IBaseEntity : IEntityWithTypeId<long>
     {
         string CreateByUserId { get; set; }
 

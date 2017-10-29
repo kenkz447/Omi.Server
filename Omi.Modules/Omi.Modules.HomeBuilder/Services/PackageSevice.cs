@@ -42,12 +42,11 @@ namespace Omi.Modules.HomeBuilder.Services
             .Include(o => o.EntityTaxonomies)
             .ThenInclude(o => o.Taxonomy)
             .ThenInclude(o => o.TaxonomyDetails)
-            .AsNoTracking()
             .AsQueryable();
 
         public async Task<PaginatedList<Package>> GetPackages(PackageFilterServiceModel serviceModel)
         {
-            var packages = GetPackages();
+            var packages = GetPackages().AsNoTracking();
 
             foreach (var taxonomyId in serviceModel.TaxonomyIds)
                 if(taxonomyId != default(long))
@@ -66,11 +65,17 @@ namespace Omi.Modules.HomeBuilder.Services
             return result;
         }
 
+        public async Task<Package> GetNextPackage(long packageId)
+            => await GetPackages().AsNoTracking().FirstOrDefaultAsync(o => o.Id > packageId);
+
+        public async Task<Package> GetPrevPackage(long packageId)
+            => await GetPackages().AsNoTracking().Where(o => o.Id < packageId).OrderByDescending(o => o.Id).FirstOrDefaultAsync();
+
         public async Task<Package> GetPackageById(long packageId)
-            => await GetPackages().SingleAsync(o => o.Id == packageId);
+            => await GetPackages().AsNoTracking().SingleAsync(o => o.Id == packageId);
 
         public async Task<Package> GetPackageByName(string packageName)
-            => await GetPackages().SingleAsync(o => o.Name == packageName);
+            => await GetPackages().AsNoTracking().SingleAsync(o => o.Name == packageName);
 
         public async Task<Package> CreateNewPackage(PackageServiceModel serviceModel)
         {
@@ -95,7 +100,7 @@ namespace Omi.Modules.HomeBuilder.Services
 
         public async Task<Package> UpdatePackageAsync(PackageServiceModel serviceModel)
         {
-            var package = await GetPackageById(serviceModel.Id);
+            var package = await GetPackages().SingleAsync(o => o.Id == serviceModel.Id);
             var newPackage = serviceModel.ToEntity();
 
             _context.Entry(package).CurrentValues.SetValues(newPackage);
